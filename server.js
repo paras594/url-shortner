@@ -4,6 +4,7 @@ const ejs = require("ejs");
 const path = require("path");
 const Url = require("./models/urls.schema.js");
 const { v4: uuid } = require("uuid");
+const { validateUrl } = require("./validators.js");
 const app = express();
 
 require("./config/db.config.js");
@@ -14,25 +15,60 @@ app.use(express.urlencoded({ extended: false }));
 
 app.set("view engine", "ejs");
 
-app.post("/api/urls", (req, res) => {
+function generateId() {
+	return uuid().slice(0, 8);
+}
+
+async function checkId(id) {
+	let myId = id;
+	let url = await Url.findOne({ shortUrl: myId });
+	if (url) {
+		myId = generateId();
+		return checkId(myId);
+	} else {
+		return myId;
+	}
+}
+
+app.post("/api/urls", async (req, res) => {
 	let { url } = req.body;
-	let urlId = uuid().slice(0, 8);
+	let { isValid, errors } = validateUrl(req.body);
 
-	console.log("here", req.body);
-	console.log(shortUrl);
+	if (!isValid) {
+		console.log(errors);
+		return res.status(400).json({
+			message: "Validation errors",
+			errors
+		});
+	}
 
-	const newUrl = new Url({
+	let urlId = generateId();
+
+	urlId = await checkId(urlId);
+
+	let newUrl = new Url({
 		mainUrl: url,
 		shortUrl: urlId
 	});
 
-	newUrl.save();
+	newUrl.save().then(() => {
+		res.status(201).json({
+			url: `http://localhost:3000/${urlId}`
+		});
+	});
+});
 
-	res.json(req.body);
+app.get("/favicon.ico", (req, res) => {
+	return;
 });
 
 app.get("/:urlId", (req, res) => {
-	res.json({ working: true });
+	const { urlId } = req.params;
+
+	Url.findOne({ shortUrl: urlId }).then((url) => {
+		const { mainUrl } = url;
+		res.redirect(mainUrl);
+	});
 });
 
 app.get("/", (req, res) => {

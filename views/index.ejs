@@ -8,7 +8,7 @@
 		<style>
 			html, body {
 				height: 100vh;
-				min-height: 600px; 
+				min-height: 600px;
 			}
 		</style>
 	</head>
@@ -25,21 +25,20 @@
 					   	id="urlInput" 
 					   	placeholder="Enter the URL here..." 
 					   />
-					   <div class="invalid-feedback">
-				 			Wront url
-				      </div>
+					   <div class="invalid-feedback" id="urlInputError"></div>
 					</div>
 					<button class="btn btn-success" type="submit">Squeeze URL !</button>
 				</form>
 				<div id="shortenedUrlContainer" class="mt-5 d-none">
 					<p class="lead">Here is your shortened URL</p>
 					<div class="input-group mb-3">
-  						<p id="shortenedUrl" class="form-control text-left">something</p>
+  						<input id="shortenedUrl" class="form-control text-body text-left bg-light" readonly/>
   						<div class="input-group-append">
     						<button id="copyBtn" class="btn btn-outline-primary" type="button">Copy</button>
   						</div>
 					</div>
 					<p id="copySuccess" class="text-center text-success d-none">Copied !</p>
+					<p id="copyFailure" class="text-center text-danger d-none">Copy Failed !</p>
 				</div>
 			</div>
 		</div>
@@ -53,16 +52,78 @@
 				const shortenedUrl = document.querySelector("#shortenedUrl");
 				const copyBtn = document.querySelector("#copyBtn");
 				const copySuccess = document.querySelector("#copySuccess");
+				const copyFailure = document.querySelector("#copyFailure");
+				const urlInputError = document.querySelector("#urlInputError");
 				
+				function showCopyMsg(success) {
+					if(success) {
+						copySuccess.classList.remove("d-none");
+						setTimeout(() => {
+							copySuccess.classList.add("d-none");
+						}, 3000);
+					} else {
+						copyFailure.classList.remove("d-none");
+						setTimeout(() => {
+							copyFailure.classList.add("d-none");
+						}, 3000);
+					}
+				}
+
+				function clearSelection () {
+					let temp = shortenedUrl.value;
+					shortenedUrl.value = "";
+					shortenedUrl.value = temp;
+				}
+
+				async function copyToClipboard(text) {
+					if (!navigator.clipboard) {
+						shortenedUrl.select();
+						try {
+							let success = document.execCommand("copy");
+							clearSelection();
+							showCopyMsg(true);
+						} catch (err) {
+							showCopyMsg(false);
+						}
+					} else {
+						try {
+							await navigator.clipboard.writeText(shortenedUrl.value);
+							showCopyMsg(true);
+						} catch(err) {
+							showCopyMsg(false);
+						}
+					}
+				}
+
+				copyBtn.addEventListener("click", (e) => {
+					e.preventDefault();
+					copyToClipboard(shortenedUrl);
+				})
+
 				form.addEventListener("submit", function(e) {
 					e.preventDefault();
-					console.log("submitting form");
+					urlInput.classList.remove("is-invalid");
+						urlInputError.innerHTML = "";
+
 					let data = {
 						url: urlInput.value
 					}
 
-					axios.post("/api/urls", data).then(res => console.log(res.data));
-				})
+					axios.post("/api/urls", data).then(res => {
+						const newUrl = res.data.url;
+						urlInput.value = "";
+
+						shortenedUrl.value = newUrl;
+						shortenedUrlContainer.classList.remove("d-none");
+					}).catch(err => {
+						const {data} = err.response;
+						console.log(err.response.data);
+
+						console.error(data.message);
+						urlInput.classList.add("is-invalid");
+						urlInputError.innerHTML = data.errors.url;
+					})
+				});
 			}
 		</script>
 	</body>
