@@ -10,13 +10,45 @@
 				height: 100vh;
 				min-height: 600px;
 			}
+
+			@media (max-width: 800px) {
+				html {
+					font-size: 18px;
+				}
+				h1 {
+					font-size: 32px;
+				}
+			}
+
+			@media (max-width: 500px) {
+				html {
+					font-size: 14px;
+				}
+				h1 {
+					font-size: 26px;
+				}
+			}
+
+			@media (max-width: 500px) {
+			/*	html {
+					font-size: 10px;
+				}*/
+				h1 {
+					font-size: 23px;
+				}
+			}
+
+			#urlInput {
+				max-width: 30rem;
+				margin: 0 auto;
+			}
 		</style>
 	</head>
 	<body>
 		<div style="min-height: 100%" class="container d-flex justify-content-center align-items-center">
-			<div class="text-center">
+			<div class="text-center" style="width: 100%">
 				<h1 class="mb-3">Squeeze those long URLs !!</h1>
-				<form id="form">
+				<form id="form" style="width: 100%">
 					<div class="form-group">
 					   <input 
 					   	type="text" 
