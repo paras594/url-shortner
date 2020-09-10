@@ -52,7 +52,7 @@ app.post("/api/urls", async (req, res) => {
 
 	newUrl.save().then(() => {
 		res.status(201).json({
-			url: `http://localhost:3000/${urlId}`
+			url: `https://squeezeurl.herokuapp.com/${urlId}`
 		});
 	});
 });
