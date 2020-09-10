@@ -1,6 +1,13 @@
-const dbName = "url-shortner";
 const mongoose = require("mongoose");
-const mongoURI = `mongodb://localhost:27017/${dbName}`;
+const dbName = "url-shortner";
+const { MONGO_USERNAME, MONGO_PASSWORD } = process.env;
+
+// for local development
+// const mongoURI = `mongodb://localhost:27017/${dbName}`;
+
+// for deployment with atlas mongodb
+const mongoURI = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.zaceq.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+
 const options = {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
