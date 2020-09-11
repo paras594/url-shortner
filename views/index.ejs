@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/flatly/bootstrap.min.css" integrity="sha384-qF/QmIAj5ZaYFAeQcrQ6bfVMAh4zZlrGwTPY7T/M+iTTLJqJBJjwwnsE5Y0mV7QK" crossorigin="anonymous">
-		<title>Url Shortner</title>
+		<title>Url Shortener</title>
 		<style>
 			html, body {
 				height: 100vh;
@@ -38,7 +38,7 @@
 				}
 			}
 
-			#urlInput {
+			input {
 				max-width: 30rem;
 				margin: 0 auto;
 			}
@@ -63,7 +63,7 @@
 				</form>
 				<div id="shortenedUrlContainer" class="mt-5 d-none">
 					<p class="lead">Here is your shortened URL</p>
-					<div class="input-group mb-3">
+					<div class="input-group mb-3 mx-auto" style="max-width: 30rem">
   						<input id="shortenedUrl" class="form-control text-body text-left bg-light" readonly/>
   						<div class="input-group-append">
     						<button id="copyBtn" class="btn btn-outline-primary" type="button">Copy</button>
